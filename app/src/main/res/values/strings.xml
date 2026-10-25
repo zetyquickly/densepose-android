@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">DensePose Demo</string>
+
+    <string name="main_photo">Photo</string>
+    <string name="main_video">Video from gallery</string>
+    <string name="main_live">Live camera</string>
+    <string name="main_gpu">Run the network on the GPU</string>
+    <string name="main_hint">CSE DensePose, on device. Person pixels are coloured by the SMPL body-surface vertex they map to.</string>
+
+    <string name="quality_fast">Fast: 640×480 network, about 2× the frame rate</string>
+    <string name="quality_high">High: 1088×800 network, more accurate (applies to the next screen you open)</string>
+
+    <string name="pick_photo">Pick photo</string>
+    <string name="pick_video">Pick video</string>
+    <string name="stop">Stop</string>
+    <string name="save_png">Save PNG</string>
+    <string name="flip_camera">Flip camera</string>
+    <string name="colors">Colors</string>
+    <string name="boxes">Boxes</string>
+    <string name="save_video">Save mp4</string>
+
+    <string name="camera_needed">The camera permission is needed for the live view</string>
+    <plurals name="people">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d people</item>
+    </plurals>
+    <string name="hud_image">%1$s · %2$.0f ms · %3$s</string>
+    <string name="hud_video">%1$.1f fps · latency %2$.0f ms · %3$s · %4$s</string>
+    <string name="hud_live">%1$.1f fps (camera %2$.1f) · latency %3$.0f ms · %4$s · %5$s</string>
+    <string name="hud_starting">Loading the network…</string>
+    <string name="saved">Saved to %1$s</string>
+    <string name="error">Error: %1$s</string>
+</resources>

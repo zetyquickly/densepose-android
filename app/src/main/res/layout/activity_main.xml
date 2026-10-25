@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp"
+        android:text="@string/main_hint" />
+
+    <Button
+        android:id="@+id/btn_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_photo" />
+
+    <Button
+        android:id="@+id/btn_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_video" />
+
+    <Button
+        android:id="@+id/btn_live"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_live" />
+
+    <RadioGroup
+        android:id="@+id/quality"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_fast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/quality_fast" />
+
+        <RadioButton
+            android:id="@+id/radio_high"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/quality_high" />
+    </RadioGroup>
+
+    <CheckBox
+        android:id="@+id/chk_gpu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/main_gpu" />
+</LinearLayout>
