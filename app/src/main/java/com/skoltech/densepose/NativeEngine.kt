@@ -2,6 +2,7 @@ package com.skoltech.densepose
 
 import android.graphics.Bitmap
 import java.nio.ByteBuffer
+import java.util.concurrent.atomic.AtomicLong
 
 /** One finished frame: size of the working picture, timings, and the people found (frame px). */
 class FrameInfo(
@@ -20,32 +21,43 @@ class FrameInfo(
  *
  * Frames go in through submit*() and come out of next() in order, composited with the vertex colours; render() copies the
  * picture of the last next() into a bitmap. submit* blocks while the pipeline is full. close() ends the input; destroy() frees
- * the engine and must come after the thread calling next() has seen it return null.
+ * the engine and must come after the thread calling next() has seen it return null. After destroy() the handle is gone: close()
+ * and destroy() are no-ops, next() returns null, and submit*()/render() throw.
  */
 class NativeEngine(modelDir: String, gpu: Boolean, cpuThreads: Int, scoreThreshold: Float, vertexColors: ByteArray, maxSide: Int) {
-    private val handle = nativeCreate(modelDir, gpu, cpuThreads, scoreThreshold, vertexColors, maxSide)
+    private val handle = AtomicLong(nativeCreate(modelDir, gpu, cpuThreads, scoreThreshold, vertexColors, maxSide))
+
+    private fun live(): Long = handle.get().also { check(it != 0L) { "engine destroyed" } }
 
     fun submitRgba(id: Long, buffer: ByteBuffer, width: Int, height: Int, rowStride: Int, rotation: Int) =
-        nativeSubmitRgba(handle, id, buffer, width, height, rowStride, rotation)
+        nativeSubmitRgba(live(), id, buffer, width, height, rowStride, rotation)
 
-    fun submitBitmap(id: Long, bitmap: Bitmap, rotation: Int = 0) = nativeSubmitBitmap(handle, id, bitmap, rotation)
+    fun submitBitmap(id: Long, bitmap: Bitmap, rotation: Int = 0) = nativeSubmitBitmap(live(), id, bitmap, rotation)
 
     fun submitYuv(
         id: Long, y: ByteBuffer, u: ByteBuffer, v: ByteBuffer, width: Int, height: Int, yStride: Int, uvStride: Int,
         uvPixelStride: Int, rotation: Int, bt709: Boolean, fullRange: Boolean,
-    ) = nativeSubmitYuv(handle, id, y, u, v, width, height, yStride, uvStride, uvPixelStride, rotation, if (bt709) 1 else 0, fullRange)
+    ) = nativeSubmitYuv(live(), id, y, u, v, width, height, yStride, uvStride, uvPixelStride, rotation, if (bt709) 1 else 0, fullRange)
 
-    fun close() = nativeClose(handle)
+    fun close() {
+        val h = handle.get()
+        if (h != 0L) nativeClose(h)
+    }
 
     /** Blocks for the next result; null once closed and drained. */
     fun next(alpha: Float): FrameInfo? {
-        val r = nativeNext(handle, alpha) ?: return null
+        val h = handle.get()
+        if (h == 0L) return null
+        val r = nativeNext(h, alpha) ?: return null
         return FrameInfo(r[0].toLong(), r[1].toInt(), r[2].toInt(), r[3], FloatArray(r[4].toInt() * 5) { r[5 + it].toFloat() })
     }
 
-    fun render(bitmap: Bitmap) = nativeRender(handle, bitmap)
+    fun render(bitmap: Bitmap) = nativeRender(live(), bitmap)
 
-    fun destroy() = nativeDestroy(handle)
+    fun destroy() {
+        val h = handle.getAndSet(0)
+        if (h != 0L) nativeDestroy(h)
+    }
 
     private external fun nativeCreate(modelDir: String, gpu: Boolean, cpuThreads: Int, scoreThreshold: Float, colors: ByteArray, maxSide: Int): Long
     private external fun nativeDestroy(handle: Long)
