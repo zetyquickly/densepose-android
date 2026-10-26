@@ -43,8 +43,18 @@ inference engine is in `third_party/DensePoseFnL/export/engine`, and our CMake f
     git add third_party/DensePoseFnL
 
 Re-export the models from the new checkout, rebuild, and commit the new pin together with whatever the app needed to change for it. If the
-engine's interface changes (results format, `Person` fields), bump the pin in the same PR that adapts the app. The committed debug APK is
-built from the pinned commit. Rebuild it when you bump.
+engine's interface changes (results format, `Person` fields), bump the pin in the same PR that adapts the app.
+
+## Prebuilt APK
+
+The debug APK is not in the repo (it was 84 MB per version in Git LFS). Download `app-debug.apk` from the
+[Releases](https://github.com/zetyquickly/densepose-android/releases) page and `adb install -r` it. Each release is built from the pinned
+DensePoseFnL commit, which is named in the release notes. To cut one after bumping the pin:
+
+    ./gradlew assembleDebug
+    gh release create v<version> app/build/outputs/apk/debug/app-debug.apk --title v<version> \
+        --notes "Built against DensePoseFnL $(git -C third_party/DensePoseFnL rev-parse --short HEAD)"
+
 
 ## Layout
 
