@@ -117,7 +117,7 @@ static int Render(char** a) {
   char magic[4];
   uint32_t d[3];
   float crop[3];
-  if (std::fread(magic, 1, 4, f) != 4 || std::memcmp(magic, "FNL1", 4) || std::fread(d, 4, 3, f) != 3 || std::fread(crop, 4, 3, f) != 3)
+  if (std::fread(magic, 1, 4, f) != 4 || std::memcmp(magic, "FNL2", 4) || std::fread(d, 4, 3, f) != 3 || std::fread(crop, 4, 3, f) != 3)
     return std::fprintf(stderr, "not a results file\n"), 1;
   const int W = std::atoi(a[2]), H = std::atoi(a[3]), want = std::atoi(a[6]);
   const uint32_t res = d[2];
@@ -141,8 +141,8 @@ static int Render(char** a) {
     r.crop_y = static_cast<int>(crop[2]);
     for (uint32_t i = 0; i < n; ++i) {
       fnl::Person p;
-      p.person.resize(res * res), p.vertex.resize(res * res);
-      if (std::fread(&p.box, 4, 4, f) != 4 || std::fread(&p.score, 4, 1, f) != 1 || std::fread(p.person.data(), 1, res * res, f) != res * res ||
+      p.margin.resize(res * res), p.vertex.resize(res * res);
+      if (std::fread(&p.box, 4, 4, f) != 4 || std::fread(&p.score, 4, 1, f) != 1 || std::fread(p.margin.data(), 4, res * res, f) != res * res ||
           std::fread(p.vertex.data(), 4, res * res, f) != res * res)
         return std::fprintf(stderr, "truncated\n"), 1;
       r.people.push_back(std::move(p));

@@ -1,4 +1,5 @@
-// Draws the engine's per-person vertex-id maps over the frame they were computed on.
+// Draws the engine's per-person vertex-id maps over the frame they were computed on: person where the bilinearly upsampled margin
+// is positive, coloured by a bilinear blend of the neighbouring cells' vertex colours.
 #pragma once
 
 #include <cstdint>
