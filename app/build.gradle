@@ -7,8 +7,9 @@ plugins {
 //   ndk.path=<Android NDK>                      optional, else the SDK's side-by-side ndkVersion
 //   fnl.tflite.src=<tensorflow checkout>        TFLite sources the engine was built against
 //   fnl.tflite.build=<TFLite cmake build dir>   arm64-v8a, android-31, GPU delegate on (see export/engine/README.md)
-//   fnl.engine.dir=<DensePoseFnL>/export/engine       the C++ pipeline this app wraps
-//   fnl.models.dir=<DensePoseFnL>/export/out/litert   dirs of graph_{a,b1,b2,c}.tflite, one per name in fnl.models
+//   fnl.engine.dir=<DensePoseFnL>/export/engine       override of the pinned engine (default third_party/DensePoseFnL/export/engine)
+//   fnl.models.dir=<DensePoseFnL>/export/out/litert   override of the models dir (default third_party/DensePoseFnL/export/out/litert);
+//                                                     dirs of graph_{a,b1,b2,c}.tflite, one per name in fnl.models
 //   fnl.models=cse,cse_portrait,cse_800,cse_800_portrait   graph sets bundled into the APK (dirs of graph_{a,b1,b2,c}.tflite)
 def localProps = new Properties()
 rootProject.file('local.properties').withInputStream { localProps.load(it) }
@@ -19,8 +20,10 @@ def required = { String key ->
     if (v == null) throw new GradleException("Set ${key} in local.properties (see the top of app/build.gradle)")
     v
 }
-def engineDir = file(required('fnl.engine.dir')).canonicalPath
-def modelsDir = file(required('fnl.models.dir')).canonicalPath
+// the engine is pinned as a submodule; the properties only override it for local development
+def pinned = rootProject.file('third_party/DensePoseFnL')
+def engineDir = file(prop('fnl.engine.dir', "${pinned}/export/engine")).canonicalPath
+def modelsDir = file(prop('fnl.models.dir', "${pinned}/export/out/litert")).canonicalPath
 def tfliteSrc = required('fnl.tflite.src')
 def tfliteBuild = required('fnl.tflite.build')
 def bundledModels = prop('fnl.models', 'cse,cse_portrait,cse_800,cse_800_portrait').split(',').collect { it.trim() }

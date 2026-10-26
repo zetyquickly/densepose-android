@@ -1,0 +1,3 @@
+[submodule "third_party/DensePoseFnL"]
+	path = third_party/DensePoseFnL
+	url = https://github.com/zetyquickly/DensePoseFnL
